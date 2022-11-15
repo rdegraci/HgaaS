@@ -5,58 +5,74 @@ import os
 from types import ModuleType
 from datetime import datetime
 from collections import deque
+import psutil
 
 app = Quart(__name__, static_url_path='/public', static_folder='public', template_folder="templates")
 
 
-modules_dir = "./modules/JewD/modules"
+project_dir = "/mnt/c/Users/danie/OneDrive/Documents/web_backend"
+modules_dir = f"{project_dir}/modules"
+cmd = '/mnt/c/Users/danie/OneDrive/Documents/HgaaS/a.sh'
 
 file_lock_times = {}
 
-logfname = "process.log"
-log = deque(maxlen=10)
-proc = None
-cmd = '/mnt/c/Users/danie/OneDrive/Documents/HgaaS/a.sh'
+log = deque(maxlen=40)
+pid = None
+running = True
 
-log.append('asdf')
-log.append('qwer')
-log.append('yuiop')
-log.append('zxcv')
+cmd = project_dir + "/run.sh"
 
-async def monitor_process():
-	global proc, log
-	while True:
-		if proc is None:
-			print("no process running")
-			await asyncio.sleep(1)
-		else:
-			data = await proc.stdout.readline()
-			line = data.decode('ascii').rstrip()
-			print("process>>>> " + line)
-			log.append(line)
+async def run_proc():
+    global pid, cmd, log, running
 
-async def start_process():
-	global proc
-	proc = await asyncio.create_subprocess_shell(
-		cmd,
-		stdout=asyncio.subprocess.PIPE,
-	)
+    while running:
+        a = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
+        pid = a.pid
 
-async def restart_process():
-	await proc.kill()
-	prod = None
-	start_process()
+        # read lines iteratively until the process exits
+        while True:
+            await asyncio.sleep(0.01)
+            log.append((await a.stdout.readline()).decode('ascii').rstrip())
+            if a.returncode is not None:
+                break
+
+        # then flush the buffer
+        line = None
+        while line != b'':
+            line = await a.stdout.readline()
+            log.append(line.decode('ascii').rstrip())
+
+        log.append("==========================================")
+
+async def kill_proc():
+    global pid
+    # gotta kill the whole process tree manually
+    proc = psutil.Process(pid)
+    for p in proc.children(recursive=True):
+        try:
+            p.kill()
+        except psutil.NoSuchProcess:
+            pass
+    try: 
+        proc.kill()
+    except psutil.NoSuchProcess:
+        pass
+
+
 
 async def commit_changes():
 	pass
 
-# start_process()
+
+
+
 
 @app.route('/files')
 async def files():
 	filenames = glob.glob(modules_dir + '/*')
 	filenames = [ t for t in filenames if not os.path.isdir(t) ]
 	return jsonify({"files": filenames})
+
 
 @app.route('/read')
 async def read():
@@ -65,47 +81,51 @@ async def read():
 	with open(fname) as f:
 		return jsonify({"fname": fname, "content": f.read()})
 
-@app.route('/save')
-async def save(fname):
+
+@app.post('/save')
+async def save():
+	global log
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
-	with open(fname) as f:
-		f.write(request.json['content'])
-	restart_process()
-	commit_changes()
+	j = await request.get_json()
+	with open(fname, 'w') as f:
+		f.write(j['content'])
+	log.clear()
+	await kill_proc()
+	await commit_changes()
 	return jsonify({"fname": fname})
 
+
 @app.route('/new')
-async def new(fname):
+async def new():
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
 	with open(fname) as f:
 		f.write("\n\n\ndef register(bot):\n    pass\n\n\n")
-	restart_process()
-	commit_changes()
+	await kill_proc()
+	await commit_changes()
 	return jsonify({})
 
+
 @app.route('/rm')
-async def rm(fname):
+async def rm():
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
 	os.remove(fname)
-	restart_process()
-	commit_changes()
+	await kill_proc()
+	await commit_changes()
 	return jsonify({})
+
 
 @app.route('/logs')
 async def logs():
 	return jsonify({"content": "\n".join(log)})
 
+
 @app.route('/restart')
 async def restart():
-	if proc is None:
-		await start_process()
-	else:
-		await restart_process()
-	return ""
-
+	await kill_proc()
+	
 
 
 
@@ -114,27 +134,34 @@ def file_is_locked(fname):
 	# TODO: implement
 	# return (lock is less than 10 seconds old) 
 
+
 @app.route('/lock/<fname>')
 async def lock():
 	if not file_is_locked(fname):
 		file_lock_times[fname] = datetime.now()
 	return jsonify({})
 
+
 @app.route('/lock_status/<fname>')
 async def lock_status():
 	return jsonify({"fname": fname, "locked": file_is_locked(fname)})
 
 
-# TODO: process manager: start, stop, restart, record logs
 
+@app.while_serving
+async def close_process_after_shutdown():
+	global running
+	yield
+	running = False
+	await kill_proc()
 
 
 
 if __name__ == "__main__":
 	loop = asyncio.get_event_loop()
 	loop.run_until_complete(asyncio.gather(
-		app.run_task(host='0.0.0.0', port=8081), 
-		monitor_process()
+		app.run_task(host='0.0.0.0', port=8082), 
+		run_proc(),
 	))
     # app.run(host='0.0.0.0', port=8081, ssl_context=('bodygen_re.crt', 'bodygen_re.key'))
 

@@ -4,19 +4,13 @@
 <script src="lib/codemirror.js"></script>
 <script src="mode/meta.js"></script>
 <script src='mode/xml/xml.js'></script>
-<script src='mode/haxe/haxe.js'></script>
-<script src='mode/clojure/clojure.js'></script>
-<script src='mode/commonlisp/commonlisp.js'></script>
 <script src='mode/ruby/ruby.js'></script>
 <script src='mode/javascript/javascript.js'></script>
 <script src='mode/rst/rst.js'></script>
-<script src='mode/apl/apl.js'></script>
 <script src='mode/tiddlywiki/tiddlywiki.js'></script>
-<script src='mode/ntriples/ntriples.js'></script>
 <script src='mode/haskell/haskell.js'></script>
 <script src='mode/erlang/erlang.js'></script>
 <script src='mode/smalltalk/smalltalk.js'></script>
-<script src='mode/pascal/pascal.js'></script>
 <script src='mode/pig/pig.js'></script>
 <script src='mode/php/php.js'></script>
 <script src='mode/diff/diff.js'></script>
@@ -25,33 +19,20 @@
 <script src='mode/python/python.js'></script>
 <script src='mode/properties/properties.js'></script>
 <script src='mode/verilog/verilog.js'></script>
-<script src='mode/lua/lua.js'></script>
 <script src='mode/sql/sql.js'></script>
 <script src='mode/http/http.js'></script>
-<script src='mode/ecl/ecl.js'></script>
-<script src='mode/z80/z80.js'></script>
 <script src='mode/shell/shell.js'></script>
 <script src='mode/vbscript/vbscript.js'></script>
 <script src='mode/coffeescript/coffeescript.js'></script>
 <script src='mode/perl/perl.js'></script>
-<script src='mode/groovy/groovy.js'></script>
-<script src='mode/gfm/gfm.js'></script>
 <script src='mode/yaml/yaml.js'></script>
 <script src='mode/htmlmixed/htmlmixed.js'></script>
 <script src='mode/css/css.js'></script>
 <script src='mode/r/r.js'></script>
-<script src='mode/stex/stex.js'></script>
-<script src='mode/velocity/velocity.js'></script>
-<script src='mode/asterisk/asterisk.js'></script>
 <script src='mode/clike/clike.js'></script>
-<script src='mode/sieve/sieve.js'></script>
-<script src='mode/d/d.js'></script>
-<script src='mode/vb/vb.js'></script>
 <script src='mode/scheme/scheme.js'></script>
 <script src='mode/sass/sass.js'></script>
 <script src='mode/go/go.js'></script>
-<script src='mode/tiki/tiki.js'></script>
-<script src='mode/smarty/smarty.js'></script>
 <!-- <script src='mode/rust/rust.js'></script> -->
 <script src='mode/xquery/xquery.js'></script>
 <script src='mode/sparql/sparql.js'></script>
@@ -62,10 +43,7 @@
 <div id="left_panel">
 	<section id="editor">
 		<textarea id='myTextarea'>
-var asdf = "qwer";
-function asdf(param) {
-	console.log(param);
-}
+// choose a file
 		</textarea>
 	</section>
 </div>
@@ -73,21 +51,11 @@ function asdf(param) {
 <div id="right_panel">
 	<section id="file_browser">
 		<ul>
-			<li>asdf</li>
-			<li>qwer</li>
-			<li>yuiop</li>
-			<li>zxcv</li>
 		</ul>
 	</section>
 
 	<section id="log">
 		<pre>
-stuff
-starting on port 8081
-doing other things
-hello im flask
-this is my thing
-hello
 		</pre>
 	</section>
 </div>
@@ -105,24 +73,21 @@ hello
     mode: 'text/javascript'
   });
 
-
-  // needs:
-  // 1 - files list endpoint
-  // 2 - file get endpoint
-  // 3 - file save endpoint
-  // 4 - file new endpoint
-  // 5 - file delete endpoint
-  // 6 - logs poll endpoint
-  // 7 - lock file
-  // 8 - lock status for file
-  // - process manager
-  // 
-  // 
-  // 
+  var curr_file = ""
 
   function loadFile(fname) {
   	jQuery.get('/read?fname=' + fname).then(function(r) {
   		editor.setValue(r.content)
+  		curr_file = fname
+  		if (curr_file.endsWith('.py')) {
+  			editor.setMode('text/python')
+  		} else if (curr_file.endsWith('.js')) {
+  			editor.setMode('text/javascript')
+  		} else if (curr_file.endsWith('.html')) {
+  			editor.setMode('text/html')
+  		} else if (curr_file.endsWith('.css')) {
+  			editor.setMode('text/css')
+  		}
   	})
   }
 
@@ -150,4 +115,16 @@ hello
   refreshLogs()
   setInterval(refreshLogs, 1000)
 
+    jQuery(document).keydown(function(event) {
+        if((event.ctrlKey || event.metaKey) && event.which == 83) {
+            var code = editor.getValue()
+            $.ajax('/save?fname=' + curr_file, {
+			    data : JSON.stringify({ "content": code }),
+			    contentType : 'application/json',
+			    type : 'POST'
+			})
+            event.preventDefault();
+            return false;
+        }
+    });
 </script>
