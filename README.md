@@ -48,7 +48,7 @@ Mercury 4eva.
   cp config.json.template hgaas.json
   ```
 
-- (optional) Edit `config.json` to your liking and save it
+- (optional) Edit `hgaas.json` to your liking and save it
   ```bash
   $EDITOR hgaas.json
   ```
