@@ -49,7 +49,10 @@ app.config['QUART_AUTH_BASIC_USERNAME'] = config['auth_user']
 app.config['QUART_AUTH_BASIC_PASSWORD'] = config['auth_password']
 
 
-blocklist_regs = [ r"\.hgaasignore", r".*\.crt", r".*\.key", r".*DS_STORE", r".*\.swp", r".*\.swo" ]
+blocklist_regs = [ 
+    r"\.hgaasignore$", r".*\.crt$", r".*\.csr$", r".*\.key$", r".*DS_STORE$", r".*\.swp$", r".*\.swo$", 
+    r".*\.pyc", r"__pycache__", r"node_modules"
+]
 
 file_lock_times = {}
 
@@ -62,7 +65,7 @@ async def run_proc():
     global config, pid, log, running
 
     while running:
-        a = await asyncio.create_subprocess_shell(config['cmd'], stdout=asyncio.subprocess.PIPE, cwd=config['project_dir'])
+        a = await asyncio.create_subprocess_shell(config['cmd'] + " 2>&1", stdout=asyncio.subprocess.PIPE, cwd=config['project_dir'])
         pid = a.pid
 
         # read lines iteratively until the process exits
