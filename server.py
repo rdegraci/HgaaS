@@ -9,14 +9,19 @@ import psutil
 import json
 import re
 
-app = Quart(__name__, static_url_path='/', static_folder='public', template_folder="public")
+from quart_auth import basic_auth_required
 
+app = Quart(__name__, static_url_path='/', static_folder='public', template_folder="public")
 
 config = json.load(open('./config.json'))
 if os.path.isfile(config['project_dir'] + '/.hgaasignore'):
 	ignore_regs = [ t.strip() for t in open(config['project_dir'] + '/.hgaasignore').readlines() ]
 else:
 	ignore_regs = []
+
+app.config['QUART_AUTH_BASIC_USERNAME'] = config['auth_user']
+app.config['QUART_AUTH_BASIC_PASSWORD'] = config['auth_password']
+
 
 blacklist_regs = [ r".*\.crt", r".*\.key", r".*DS_STORE", r".*\.swp", r".*\.swo" ]
 
@@ -72,6 +77,7 @@ async def commit_changes():
 
 
 @app.route('/')
+@basic_auth_required()
 async def index():
 	return await render_template('index.html')
 
@@ -96,6 +102,7 @@ async def files():
 
 
 @app.route('/read')
+@basic_auth_required()
 async def read():
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
@@ -104,6 +111,7 @@ async def read():
 
 
 @app.post('/save')
+@basic_auth_required()
 async def save():
 	global log
 	fname = request.args.get('fname')
@@ -117,6 +125,7 @@ async def save():
 
 
 @app.route('/new')
+@basic_auth_required()
 async def new():
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
@@ -128,6 +137,7 @@ async def new():
 
 
 @app.route('/rm')
+@basic_auth_required()
 async def rm():
 	fname = request.args.get('fname')
 	if ".." in fname: return jsonify({"error": "no."})
@@ -138,11 +148,13 @@ async def rm():
 
 
 @app.route('/logs')
+@basic_auth_required()
 async def logs():
 	return jsonify({"content": "\n".join(log)})
 
 
 @app.route('/restart')
+@basic_auth_required()
 async def restart():
 	await kill_proc()
 	
@@ -156,6 +168,7 @@ def file_is_locked(fname):
 
 
 @app.route('/lock/<fname>')
+@basic_auth_required()
 async def lock():
 	if not file_is_locked(fname):
 		file_lock_times[fname] = datetime.now()
@@ -163,6 +176,7 @@ async def lock():
 
 
 @app.route('/lock_status/<fname>')
+@basic_auth_required()
 async def lock_status():
 	return jsonify({"fname": fname, "locked": file_is_locked(fname)})
 
