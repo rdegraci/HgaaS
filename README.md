@@ -25,3 +25,23 @@ HgaaS is a tool that will improve human-human relations through programming lang
 HgaaS is the future of math. 
 
 Mercury 4eva. 
+
+## Running Locally
+
+- Clone the repo and `cd` into it
+  `git clone https://github.com/bodygenre/HgaaS.git && cd "$(basename "$_" .git)"`
+
+- (optional) Create a Python virtual environment and activate it
+  `python -m venv .env && source "$_/bin/activate"`
+
+- Install dependencies
+  `pip install -r requirements.txt`
+
+- Copy the template file and name it `hgaas.json`
+  `cp config.json.template hgaas.json`
+
+- (optional) Edit `config.json` to your liking and save it
+  `$EDITOR config.json`
+
+- Summon Mercury in the current directory
+  `python server.py .`
