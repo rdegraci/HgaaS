@@ -91,6 +91,22 @@
     </section>
   </div>
   <section id="file_browser" class="frosted-panel">
+  	<div class='hidebutton'>
+			<svg
+			  xmlns="http://www.w3.org/2000/svg"
+			  width="24"
+			  height="24"
+			  viewBox="0 0 24 24"
+			  fill="none"
+			  stroke="currentColor"
+			  stroke-width="2"
+			  stroke-linecap="round"
+			  stroke-linejoin="round"
+			  class="feather feather-chevron-up"
+			>
+			  <polyline points="9 0 16 6 9 12"></polyline>
+			</svg>
+  	</div>
     <ul>
       <li>index.html</li>
       <li>server.py</li>
@@ -107,8 +123,6 @@
 <div class="dropContainer">
   <!-- down chevron -->
   <div class="dropDown">
-    <div class="dropDown__button">
-      <div class="dropDown__icon">
 		<svg
 		  xmlns="http://www.w3.org/2000/svg"
 		  width="24"
@@ -121,13 +135,9 @@
 		  stroke-linejoin="round"
 		  class="feather feather-chevron-up"
 		>
-		  <!-- <polyline points="6 9 12 15 18 9"></polyline> -->
-		  <!-- <polyline points="6 9 12 15 18 9"></polyline> -->
 		  <polyline points="18 15 12 9 6 15"></polyline>
+		  <!-- <polyline points="0 0 8 9 0 18"></polyline> -->
 		</svg>
-	  </div>
-	  </div>
-    </div>
   </div>
 </div>
 
@@ -140,13 +150,16 @@
     color: white;
     overflow: hidden;
   }
-  #left_panel {
-  }
-  #right_panel {
-  }
 
   pre {
   	color: #AAA;
+  }
+
+  section > ul {
+  	list-style-type: none;
+  	padding-left: 0px;
+  	margin-bottom: 5px;
+  	margin-top: 5px;
   }
  
   section > ul > li {
@@ -159,8 +172,19 @@
     text-shadow: 0px 0px 5px gray;
   }
 
+  section > ul > li .current_file {
+  	color: white;
+  }
+
 	section > ul > li:hover {
-		margin-left: 5px;
+		padding-left: 5px;
+	}
+
+	section > ul > li .rm {
+		display: none;
+	}
+	section > ul > li .rm:hover {
+		display: inline-block;
 	}
 
   .panels {
@@ -177,8 +201,8 @@
     flex-direction: column;
     flex: 1;
     bottom: 0;
-	justify-content: end;
-	margin-left: 50px;
+		justify-content: end;
+		margin-left: 50px;
     width: 100vw;
   }
 
@@ -191,18 +215,37 @@
  
 
   .frosted-panel {
-	
+  	border: 3px solid #333333AA;
     border-radius: 5px;
-/*    width: 250px;*/
-		width: 300px;
-    height: 100vh;
-    /* margin-right: 10px; */
     list-style: none;
-    padding: 0;
+    padding: 5px;
     margin: 11px;
     z-index: 10;
     right: 0;
     position: absolute;
+
+    background: rgba(0, 0, 0, 20%) !important;
+    /* gaussian blur */
+    backdrop-filter: blur(4px);
+    z-index: 10;
+
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+		transition: width 0.5s ease-in-out;
+  }
+
+  .frosted-panel.hideme {
+  	width: 25px;
+		transition: width 0.5s ease-in-out;
+  }
+  .frosted-panel.hideme ul {
+		display: none;
+  }
+
+  .frosted-panel .hidebutton {
+  	margin-top: 10px;
+  	margin-right: 10px;
+  	cursor: pointer;
   }
 
   .CodeMirror {
@@ -213,40 +256,40 @@
 
     position: absolute;
     width: 100vw;
+
     background: rgba(0, 0, 0, 60%) !important;
     /* gaussian blur */
     backdrop-filter: blur(4px);
     z-index: 10;
-	transition: height 0.5s ease-in-out;
+		transition: height 0.5s ease-in-out;
 
-	/* drop-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-	word-break: break-all;
-  }
-
-  .dropContainer {
-	position: absolute;
-	bottom: 10px;
-	
-	width: 100vw;
-	height: 10vh;
-	z-index: 100;
-	justify-content: center;
-    ALIGN-ITEMS: end;
-    display: flex;
-	
-  }
-
-  .dropDown_button {
-	cursor: pointer;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		word-break: break-all;
   }
 
   .CodeMirror.hideme {
-	height: 10%;
-
-	transition: height 0.5s ease-in-out;
-  
+		height: 10%;
+		transition: height 0.5s ease-in-out;
   }
+
+
+  .dropContainer {
+		position: absolute;
+		bottom: 10px;
+		
+		width: 100vw;
+		height: 10vh;
+		z-index: 100;
+		justify-content: center;
+    ALIGN-ITEMS: end;
+    display: flex;
+    pointer-events: none;
+  }
+  .dropDown {
+		cursor: pointer;
+		pointer-events: all;
+  }
+
 </style>
 
 <script>
@@ -267,13 +310,15 @@
       editor.setValue(r.content);
       curr_file = fname;
       if (curr_file.endsWith(".py")) {
-        editor.setMode("text/python");
+        editor.setOption("mode", "python");
       } else if (curr_file.endsWith(".js")) {
-        editor.setMode("text/javascript");
+        editor.setOption("mode", "javascript");
       } else if (curr_file.endsWith(".html")) {
-        editor.setMode("text/html");
+        editor.setOption("mode", "htmlmixed");
       } else if (curr_file.endsWith(".css")) {
-        editor.setMode("text/css");
+        editor.setOption("mode", "css");
+      } else if (curr_file.endsWith(".sh")) {
+        editor.setOption("mode", "shell");
       }
     });
   }
@@ -298,17 +343,23 @@
     			if (found_mismatch) break
     		}
     	}
-      var html = "<ul>";
+      var html = "";
       for (var fname of r.files) {
-        html += "<li>" + fname.replace(fname_prefix, '') + "</li>";
+        html += "<li><span class='rm'>❌</span><span class='fname'>./" + fname.replace(fname_prefix, '') + "</span></li>";
       }
-      html += "</ul>";
-      jQuery("#file_browser").html(html);
-      jQuery("#file_browser li").click(function (ev) {
+      html += "";
+      jQuery("#file_browser ul").html(html);
+      jQuery("#file_browser ul li .fname").click(function (ev) {
         loadFile(fname_prefix + ev.currentTarget.innerText);
+        refreshFileList()
       });
+      var curr = jQuery("#file_browser ul li .fname").filter(function(i, e) {
+      	return jQuery(e).text() == curr_file.replace(fname_prefix, '');
+    	})
+    	console.log(curr.toArray())
+    	curr.addClass('current_file')
       if (initial) {
-      	jQuery('#file_browser li:first').click()
+      	jQuery('#file_browser li:first .fname').click()
       }
     });
   }
@@ -336,8 +387,11 @@
     }
   });
 
-  jQuery(".dropDown__button").click(function (ev) {
-	jQuery(".CodeMirror").toggleClass("hideme");
-  
+  jQuery(".dropDown").click(function (ev) {
+		jQuery(".CodeMirror").toggleClass("hideme");
+  });
+
+  jQuery(".frosted-panel .hidebutton").click(function (ev) {
+		jQuery(".frosted-panel").toggleClass("hideme");
   });
 </script>

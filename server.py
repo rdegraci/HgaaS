@@ -1,5 +1,5 @@
 import asyncio
-from quart import Quart, jsonify, request
+from quart import Quart, jsonify, request, render_template
 import glob
 import os
 from types import ModuleType
@@ -7,11 +7,18 @@ from datetime import datetime
 from collections import deque
 import psutil
 import json
+import re
 
-app = Quart(__name__, static_url_path='/public', static_folder='public', template_folder="templates")
+app = Quart(__name__, static_url_path='/', static_folder='public', template_folder="public")
 
 
 config = json.load(open('./config.json'))
+if os.path.isfile(config['project_dir'] + '/.hgaasignore'):
+	ignore_regs = [ t.strip() for t in open(config['project_dir'] + '/.hgaasignore').readlines() ]
+else:
+	ignore_regs = []
+
+blacklist_regs = [ r".*\.crt", r".*\.key", r".*DS_STORE", r".*\.swp", r".*\.swo" ]
 
 file_lock_times = {}
 
@@ -64,14 +71,28 @@ async def commit_changes():
 
 
 
+@app.route('/')
+async def index():
+	return await render_template('index.html')
+
 
 @app.route('/files')
 async def files():
 	global config
-	# filenames = glob.glob(config['project_dir'] + '/modules/*')
-	filenames = glob.glob(config['project_dir'] + '/**/*')
-	filenames = [ t for t in filenames if not os.path.isdir(t) ]
-	return jsonify({"files": filenames})
+	filenames = glob.glob(config['project_dir'] + '/*')
+	filenames += glob.glob(config['project_dir'] + '/**/*')
+	showfiles = []
+	for t in filenames:
+		if os.path.isdir(t):
+			continue
+		for reg in ignore_regs:
+			if re.match(reg, t):
+				continue
+		for reg in blacklist_regs:
+			if re.match(reg, t):
+				continue
+		showfiles.append(t)
+	return jsonify({"files": showfiles})
 
 
 @app.route('/read')
