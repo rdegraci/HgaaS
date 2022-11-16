@@ -68,7 +68,8 @@ async def commit_changes():
 @app.route('/files')
 async def files():
 	global config
-	filenames = glob.glob(config['project_dir'] + '/modules/*')
+	# filenames = glob.glob(config['project_dir'] + '/modules/*')
+	filenames = glob.glob(config['project_dir'] + '/**/*')
 	filenames = [ t for t in filenames if not os.path.isdir(t) ]
 	return jsonify({"files": filenames})
 

@@ -155,7 +155,8 @@
     margin: 0;
     cursor: pointer;
     color: #888;
-    font-family: mono;
+    font-family: monospace;
+    text-shadow: 0px 0px 5px gray;
   }
 
 	section > ul > li:hover {
@@ -192,7 +193,8 @@
   .frosted-panel {
 	
     border-radius: 5px;
-    width: 250px;
+/*    width: 250px;*/
+		width: 300px;
     height: 100vh;
     /* margin-right: 10px; */
     list-style: none;
@@ -201,7 +203,6 @@
     z-index: 10;
     right: 0;
     position: absolute;
-
   }
 
   .CodeMirror {
@@ -259,6 +260,8 @@
   var curr_file = "";
   var first_run = true;
 
+  var fname_prefix ="";
+
   function loadFile(fname) {
     jQuery.get("/read?fname=" + fname).then(function (r) {
       editor.setValue(r.content);
@@ -277,14 +280,32 @@
 
   function refreshFileList(initial) {
     jQuery.get("/files").then(function (r) {
+    	// determine what the common fname prefix is
+    	if (r.files.length > 0) {
+    		var parts = r.files[0].split("/");
+    		fname_prefix = ""
+    		var test_prefix = ""
+    		for (var part of parts) {
+    			fname_prefix = test_prefix
+    			test_prefix += part + "/"
+    			var found_mismatch = false
+    			for (var fname of r.files) {
+    				if (!fname.startsWith(test_prefix)) {
+    					found_mismatch = true
+    					break;
+    				}
+    			}
+    			if (found_mismatch) break
+    		}
+    	}
       var html = "<ul>";
       for (var fname of r.files) {
-        html += "<li>" + fname + "</li>";
+        html += "<li>" + fname.replace(fname_prefix, '') + "</li>";
       }
       html += "</ul>";
       jQuery("#file_browser").html(html);
       jQuery("#file_browser li").click(function (ev) {
-        loadFile(ev.currentTarget.innerText);
+        loadFile(fname_prefix + ev.currentTarget.innerText);
       });
       if (initial) {
       	jQuery('#file_browser li:first').click()
