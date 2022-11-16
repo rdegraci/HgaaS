@@ -24,12 +24,13 @@ if not os.path.isdir(sys.argv[1]):
     print(f"path give ({sys.argv[1]}) is not a valid directory")
     sys.exit(1)
 
-if not os.path.isfile(sys.argv[1] + '/hgaas.json'):
-    print(f"config file does not exist: {sys.argv[1]}/hgaas.json")
+project_dir = os.path.realpath(sys.argv[1])
+
+if not os.path.isfile(project_dir + '/hgaas.json'):
+    print(f"config file does not exist: {project_dir}/hgaas.json")
     sys.exit(1)
 
 
-project_dir = os.path.realpath(sys.argv[1])
 
 config = json.load(open(project_dir + '/hgaas.json'))
 config['project_dir'] = project_dir
