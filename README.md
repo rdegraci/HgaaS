@@ -40,7 +40,8 @@ Mercury 4eva.
 
 - Install dependencies
   ```bash
-  pip install -r requirements.txt`
+  pip install -r requirements.txt
+  ```
 
 - Copy the template file and name it `hgaas.json`
   ```bash
