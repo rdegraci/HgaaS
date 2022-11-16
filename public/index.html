@@ -40,6 +40,24 @@
 <script src="mode/htmlembedded/htmlembedded.js"></script>
 
 <script type="text/javascript" src="jquery-3.6.1.min.js"></script>
+<div id="logsPanel">
+	<section id="log">
+	  <pre>
+	Tue Nov 15 17:44:26 PST 2022
+	Tue Nov 15 17:44:27 PST 2022
+	Tue Nov 15 17:44:28 PST 2022
+	Tue Nov 15 17:44:29 PST 2022
+	Tue Nov 15 17:44:30 PST 2022
+	Tue Nov 15 17:44:31 PST 2022
+	Tue Nov 15 17:44:32 PST 2022
+	Tue Nov 15 17:44:33 PST 2022
+	Tue Nov 15 17:44:34 PST 2022
+	Tue Nov 15 17:44:36 PST 2022
+	Tue Nov 15 17:44:37 PST 2022
+	Tue Nov 15 17:44:38 PST 2022
+			</pre>
+	</section>
+  </div>
 <div class="panels">
   <div id="left_panel">
     <section id="editor">
@@ -84,24 +102,7 @@
   </section>
 </div>
 
-<div id="logsPanel">
-  <section id="log">
-    <pre>
-  Tue Nov 15 17:44:26 PST 2022
-  Tue Nov 15 17:44:27 PST 2022
-  Tue Nov 15 17:44:28 PST 2022
-  Tue Nov 15 17:44:29 PST 2022
-  Tue Nov 15 17:44:30 PST 2022
-  Tue Nov 15 17:44:31 PST 2022
-  Tue Nov 15 17:44:32 PST 2022
-  Tue Nov 15 17:44:33 PST 2022
-  Tue Nov 15 17:44:34 PST 2022
-  Tue Nov 15 17:44:36 PST 2022
-  Tue Nov 15 17:44:37 PST 2022
-  Tue Nov 15 17:44:38 PST 2022
-		  </pre>
-  </section>
-</div>
+
 
 <div class="dropContainer">
   <!-- down chevron -->
@@ -118,10 +119,11 @@
 		  stroke-width="2"
 		  stroke-linecap="round"
 		  stroke-linejoin="round"
-		  class="feather feather-chevron-down"
+		  class="feather feather-chevron-up"
 		>
-		  <polyline points="6 9 12 15 18 9"></polyline>
 		  <!-- <polyline points="6 9 12 15 18 9"></polyline> -->
+		  <!-- <polyline points="6 9 12 15 18 9"></polyline> -->
+		  <polyline points="18 15 12 9 6 15"></polyline>
 		</svg>
 	  </div>
 	  </div>
@@ -202,7 +204,7 @@
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background: rgba(100, 100, 100, 20%);
+    background: rgba(0, 0, 0, 60%) !important;
     /* gaussian blur */
     backdrop-filter: blur(4px);
     z-index: 10;
@@ -213,7 +215,7 @@
 	bottom: 10px;
 	
 	width: 100vw;
-	height: 100vh;
+	height: 10vh;
 	z-index: 100;
 	justify-content: center;
     ALIGN-ITEMS: end;
