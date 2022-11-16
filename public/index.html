@@ -43,7 +43,30 @@
 <div id="left_panel">
 	<section id="editor">
 		<textarea id='myTextarea'>
-// choose a file
+// sample code, NOT REAL
+
+var editor = CodeMirror.fromTextArea(myTextarea, {
+    lineNumbers: true,
+    mode: 'text/javascript'
+  });
+
+  var curr_file = ""
+
+  function loadFile(fname) {
+  	jQuery.get('/read?fname=' + fname).then(function(r) {
+  		editor.setValue(r.content)
+  		curr_file = fname
+  		if (curr_file.endsWith('.py')) {
+  			editor.setMode('text/python')
+  		} else if (curr_file.endsWith('.js')) {
+  			editor.setMode('text/javascript')
+  		} else if (curr_file.endsWith('.html')) {
+  			editor.setMode('text/html')
+  		} else if (curr_file.endsWith('.css')) {
+  			editor.setMode('text/css')
+  		}
+  	})
+  }
 		</textarea>
 	</section>
 </div>
@@ -51,11 +74,29 @@
 <div id="right_panel">
 	<section id="file_browser">
 		<ul>
+			<li>index.html</li>
+			<li>server.py</li>
+			<li>modules/getbest.py</li>
+			<li>modules/torrents.py</li>
+			<li>modules/judy.py</li>
+			<li>README.md</li>
 		</ul>
 	</section>
 
 	<section id="log">
 		<pre>
+Tue Nov 15 17:44:26 PST 2022
+Tue Nov 15 17:44:27 PST 2022
+Tue Nov 15 17:44:28 PST 2022
+Tue Nov 15 17:44:29 PST 2022
+Tue Nov 15 17:44:30 PST 2022
+Tue Nov 15 17:44:31 PST 2022
+Tue Nov 15 17:44:32 PST 2022
+Tue Nov 15 17:44:33 PST 2022
+Tue Nov 15 17:44:34 PST 2022
+Tue Nov 15 17:44:36 PST 2022
+Tue Nov 15 17:44:37 PST 2022
+Tue Nov 15 17:44:38 PST 2022
 		</pre>
 	</section>
 </div>

@@ -6,13 +6,12 @@ from types import ModuleType
 from datetime import datetime
 from collections import deque
 import psutil
+import json
 
 app = Quart(__name__, static_url_path='/public', static_folder='public', template_folder="templates")
 
 
-project_dir = "/mnt/c/Users/danie/OneDrive/Documents/web_backend"
-modules_dir = f"{project_dir}/modules"
-cmd = '/mnt/c/Users/danie/OneDrive/Documents/HgaaS/a.sh'
+config = json.load(open('./config.json'))
 
 file_lock_times = {}
 
@@ -20,13 +19,12 @@ log = deque(maxlen=40)
 pid = None
 running = True
 
-cmd = project_dir + "/run.sh"
 
 async def run_proc():
-    global pid, cmd, log, running
+    global config, pid, log, running
 
     while running:
-        a = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE)
+        a = await asyncio.create_subprocess_shell(config['cmd'], stdout=asyncio.subprocess.PIPE)
         pid = a.pid
 
         # read lines iteratively until the process exits
@@ -69,7 +67,8 @@ async def commit_changes():
 
 @app.route('/files')
 async def files():
-	filenames = glob.glob(modules_dir + '/*')
+	global config
+	filenames = glob.glob(config['project_dir'] + '/modules/*')
 	filenames = [ t for t in filenames if not os.path.isdir(t) ]
 	return jsonify({"files": filenames})
 
@@ -158,9 +157,16 @@ async def close_process_after_shutdown():
 
 
 if __name__ == "__main__":
+	print(config)
+	port = 8082
+	if 'port' in config:
+		port = config['port']
+	if 'PORT' in os.environ:
+		port = os.environ['PORT']
+
 	loop = asyncio.get_event_loop()
 	loop.run_until_complete(asyncio.gather(
-		app.run_task(host='0.0.0.0', port=8082), 
+		app.run_task(host='0.0.0.0', port=port), 
 		run_proc(),
 	))
     # app.run(host='0.0.0.0', port=8081, ssl_context=('bodygen_re.crt', 'bodygen_re.key'))
