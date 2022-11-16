@@ -35,9 +35,11 @@ config = json.load(open(project_dir + '/hgaas.json'))
 config['project_dir'] = project_dir
 
 ignore_regs = []
+print(project_dir + '/.hgaasignore')
 if os.path.isfile(project_dir + '/.hgaasignore'):
-    ignore_regs = [ t.strip() for t in open(project_dir + '/.hgaasignore').readlines() ]
+    ignore_regs = [ project_dir + "/" + t.strip() for t in open(project_dir + '/.hgaasignore').readlines() ]
 
+print(ignore_regs)
 
 app = Quart(__name__, static_url_path='/', static_folder='public', template_folder="public")
 
@@ -46,7 +48,7 @@ app.config['QUART_AUTH_BASIC_USERNAME'] = config['auth_user']
 app.config['QUART_AUTH_BASIC_PASSWORD'] = config['auth_password']
 
 
-blacklist_regs = [ r".*\.crt", r".*\.key", r".*DS_STORE", r".*\.swp", r".*\.swo" ]
+blocklist_regs = [ r"\.hgaasignore", r".*\.crt", r".*\.key", r".*DS_STORE", r".*\.swp", r".*\.swo" ]
 
 file_lock_times = {}
 
@@ -114,15 +116,21 @@ async def files():
     filenames += glob.glob(config['project_dir'] + '/**/*')
     showfiles = []
     for t in filenames:
+        ignore = False
         if os.path.isdir(t):
             continue
         for reg in ignore_regs:
+            if 'wip' in t:
+                print(f"ignoring {t} because of {reg}")
             if re.match(reg, t):
-                continue
-        for reg in blacklist_regs:
+                ignore = True
+                break
+        for reg in blocklist_regs:
             if re.match(reg, t):
-                continue
-        showfiles.append(t)
+                ignore = True
+                break
+        if not ignore:
+            showfiles.append(t)
     return jsonify({"files": showfiles})
 
 
