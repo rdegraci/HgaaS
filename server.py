@@ -15,7 +15,7 @@ config = json.load(open('./config.json'))
 
 file_lock_times = {}
 
-log = deque(maxlen=40)
+log = deque(maxlen=100)
 pid = None
 running = True
 
@@ -89,7 +89,6 @@ async def save():
 	j = await request.get_json()
 	with open(fname, 'w') as f:
 		f.write(j['content'])
-	log.clear()
 	await kill_proc()
 	await commit_changes()
 	return jsonify({"fname": fname})
@@ -157,7 +156,6 @@ async def close_process_after_shutdown():
 
 
 if __name__ == "__main__":
-	print(config)
 	port = 8082
 	if 'port' in config:
 		port = config['port']

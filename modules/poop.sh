@@ -1,1 +1,1 @@
-echo "asdf asdf"
+yes | head
