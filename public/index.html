@@ -107,6 +107,10 @@
 			  <polyline points="9 0 16 6 9 12"></polyline>
 			</svg>
   	</div>
+  	<div class='newbutton'>
+			+ new file
+  	</div>
+  	
     <ul>
       <li>index.html</li>
       <li>server.py</li>
@@ -177,14 +181,26 @@
   }
 
 	section > ul > li:hover {
-		padding-left: 5px;
 	}
 
 	section > ul > li .rm {
 		display: none;
+		font-size: 8px;
+		padding-right: 5px;
 	}
-	section > ul > li .rm:hover {
+	section > ul > li:hover .rm {
 		display: inline-block;
+	}
+
+	section > .newbutton {
+		margin: 0 4px;
+		cursor: pointer;
+		font-size: 12px;
+		font-family: monospace;
+	}
+
+	section.hideme > .newbutton {
+		display: none;
 	}
 
   .panels {
@@ -304,8 +320,6 @@
   var curr_file = "";
   var first_run = true;
 
-  var fname_prefix ="";
-
   function loadFile(fname) {
     jQuery.get("/read?fname=" + fname).then(function (r) {
       editor.setValue(r.content);
@@ -326,36 +340,26 @@
 
   function refreshFileList(initial) {
     jQuery.get("/files").then(function (r) {
-    	// determine what the common fname prefix is
-    	if (r.files.length > 0) {
-    		var parts = r.files[0].split("/");
-    		fname_prefix = ""
-    		var test_prefix = ""
-    		for (var part of parts) {
-    			fname_prefix = test_prefix
-    			test_prefix += part + "/"
-    			var found_mismatch = false
-    			for (var fname of r.files) {
-    				if (!fname.startsWith(test_prefix)) {
-    					found_mismatch = true
-    					break;
-    				}
-    			}
-    			if (found_mismatch) break
-    		}
-    	}
       var html = "";
       for (var fname of r.files) {
-        html += "<li><span class='rm'>❌</span><span class='fname'>./" + fname.replace(fname_prefix, '') + "</span></li>";
+        html += "<li><span class='fname'>" + fname + "</span><span class='rm'>❌</span></li>";
       }
       html += "";
       jQuery("#file_browser ul").html(html);
       jQuery("#file_browser ul li .fname").click(function (ev) {
-        loadFile(fname_prefix + ev.currentTarget.innerText);
+        loadFile(ev.currentTarget.innerText);
         refreshFileList()
       });
+      jQuery('#file_browser ul li .rm').click(function(ev) {
+      	var fname = jQuery(ev.currentTarget).parent().find('.fname').text().replace("./", "")
+      	if (confirm("are you sure you want to delete \"" + fname + "\"?\nhave you asked Daniel?")) {
+      		jQuery.get("/rm?fname=" + fname).then(function() { 
+      			refreshFileList()
+      		})
+      	}
+      })
       var curr = jQuery("#file_browser ul li .fname").filter(function(i, e) {
-      	return jQuery(e).text() == curr_file.replace(fname_prefix, '');
+      	return jQuery(e).text() == curr_file;
     	})
     	console.log(curr.toArray())
     	curr.addClass('current_file')
@@ -395,4 +399,11 @@
   jQuery(".frosted-panel .hidebutton").click(function (ev) {
 		jQuery(".frosted-panel").toggleClass("hideme");
   });
+
+  jQuery('#file_browser .newbutton').click(function(ev){
+  	var path = prompt("enter the path of your new file:")
+  	jQuery.get('/new?fname=' + path).then(function() {
+  		refreshFileList()
+  	})
+  })
 </script>

@@ -120,8 +120,6 @@ async def files():
         if os.path.isdir(t):
             continue
         for reg in ignore_regs:
-            if 'wip' in t:
-                print(f"ignoring {t} because of {reg}")
             if re.match(reg, t):
                 ignore = True
                 break
@@ -130,14 +128,14 @@ async def files():
                 ignore = True
                 break
         if not ignore:
-            showfiles.append(t)
+            showfiles.append(t.replace(project_dir, "."))
     return jsonify({"files": showfiles})
 
 
 @app.route('/read')
 @basic_auth_required()
 async def read():
-    fname = request.args.get('fname')
+    fname = project_dir + '/' + request.args.get('fname')
     if ".." in fname: return jsonify({"error": "no."})
     with open(fname) as f:
         return jsonify({"fname": fname, "content": f.read()})
@@ -147,7 +145,7 @@ async def read():
 @basic_auth_required()
 async def save():
     global log
-    fname = request.args.get('fname')
+    fname = project_dir + '/' + request.args.get('fname')
     if ".." in fname: return jsonify({"error": "no."})
     j = await request.get_json()
     with open(fname, 'w') as f:
@@ -160,9 +158,12 @@ async def save():
 @app.route('/new')
 @basic_auth_required()
 async def new():
-    fname = request.args.get('fname')
+    fname = project_dir + '/' + request.args.get('fname')
     if ".." in fname: return jsonify({"error": "no."})
-    with open(fname) as f:
+    if os.path.isfile(fname):
+        return jsonify({})
+        print("makign file", fname)
+    with open(fname, 'w') as f:
         f.write("\n\n\ndef register(bot):\n    pass\n\n\n")
     await kill_proc()
     await commit_changes()
@@ -172,7 +173,7 @@ async def new():
 @app.route('/rm')
 @basic_auth_required()
 async def rm():
-    fname = request.args.get('fname')
+    fname = project_dir + '/' + request.args.get('fname')
     if ".." in fname: return jsonify({"error": "no."})
     os.remove(fname)
     await kill_proc()
