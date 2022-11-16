@@ -50,7 +50,7 @@ Mercury 4eva.
 
 - (optional) Edit `config.json` to your liking and save it
   ```bash
-  $EDITOR config.json
+  $EDITOR hgaas.json
   ```
 
 - Summon Mercury in the current directory
