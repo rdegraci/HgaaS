@@ -1,171 +1,247 @@
 <title>HgaaS - Mercury as a Service</title>
 
-<link rel="stylesheet" href="lib/codemirror.css">
+<link rel="stylesheet" href="lib/codemirror.css" />
 <script src="lib/codemirror.js"></script>
 <script src="mode/meta.js"></script>
-<script src='mode/xml/xml.js'></script>
-<script src='mode/ruby/ruby.js'></script>
-<script src='mode/javascript/javascript.js'></script>
-<script src='mode/rst/rst.js'></script>
-<script src='mode/tiddlywiki/tiddlywiki.js'></script>
-<script src='mode/haskell/haskell.js'></script>
-<script src='mode/erlang/erlang.js'></script>
-<script src='mode/smalltalk/smalltalk.js'></script>
-<script src='mode/pig/pig.js'></script>
-<script src='mode/php/php.js'></script>
-<script src='mode/diff/diff.js'></script>
-<script src='mode/jinja2/jinja2.js'></script>
-<script src='mode/markdown/markdown.js'></script>
-<script src='mode/python/python.js'></script>
-<script src='mode/properties/properties.js'></script>
-<script src='mode/verilog/verilog.js'></script>
-<script src='mode/sql/sql.js'></script>
-<script src='mode/http/http.js'></script>
-<script src='mode/shell/shell.js'></script>
-<script src='mode/vbscript/vbscript.js'></script>
-<script src='mode/coffeescript/coffeescript.js'></script>
-<script src='mode/perl/perl.js'></script>
-<script src='mode/yaml/yaml.js'></script>
-<script src='mode/htmlmixed/htmlmixed.js'></script>
-<script src='mode/css/css.js'></script>
-<script src='mode/r/r.js'></script>
-<script src='mode/clike/clike.js'></script>
-<script src='mode/scheme/scheme.js'></script>
-<script src='mode/sass/sass.js'></script>
-<script src='mode/go/go.js'></script>
+<script src="mode/xml/xml.js"></script>
+<script src="mode/ruby/ruby.js"></script>
+<script src="mode/javascript/javascript.js"></script>
+<script src="mode/rst/rst.js"></script>
+<script src="mode/tiddlywiki/tiddlywiki.js"></script>
+<script src="mode/haskell/haskell.js"></script>
+<script src="mode/erlang/erlang.js"></script>
+<script src="mode/smalltalk/smalltalk.js"></script>
+<script src="mode/pig/pig.js"></script>
+<script src="mode/php/php.js"></script>
+<script src="mode/diff/diff.js"></script>
+<script src="mode/jinja2/jinja2.js"></script>
+<script src="mode/markdown/markdown.js"></script>
+<script src="mode/python/python.js"></script>
+<script src="mode/properties/properties.js"></script>
+<script src="mode/verilog/verilog.js"></script>
+<script src="mode/sql/sql.js"></script>
+<script src="mode/http/http.js"></script>
+<script src="mode/shell/shell.js"></script>
+<script src="mode/vbscript/vbscript.js"></script>
+<script src="mode/coffeescript/coffeescript.js"></script>
+<script src="mode/perl/perl.js"></script>
+<script src="mode/yaml/yaml.js"></script>
+<script src="mode/htmlmixed/htmlmixed.js"></script>
+<script src="mode/css/css.js"></script>
+<script src="mode/r/r.js"></script>
+<script src="mode/clike/clike.js"></script>
+<script src="mode/scheme/scheme.js"></script>
+<script src="mode/sass/sass.js"></script>
+<script src="mode/go/go.js"></script>
 <!-- <script src='mode/rust/rust.js'></script> -->
-<script src='mode/xquery/xquery.js'></script>
-<script src='mode/sparql/sparql.js'></script>
-<script src='mode/htmlembedded/htmlembedded.js'></script>
+<script src="mode/xquery/xquery.js"></script>
+<script src="mode/sparql/sparql.js"></script>
+<script src="mode/htmlembedded/htmlembedded.js"></script>
 
 <script type="text/javascript" src="jquery-3.6.1.min.js"></script>
-
-<div id="left_panel">
-	<section id="editor">
-		<textarea id='myTextarea'>
-// sample code, NOT REAL
-
-var editor = CodeMirror.fromTextArea(myTextarea, {
-    lineNumbers: true,
-    mode: 'text/javascript'
-  });
-
-  var curr_file = ""
-
-  function loadFile(fname) {
-  	jQuery.get('/read?fname=' + fname).then(function(r) {
-  		editor.setValue(r.content)
-  		curr_file = fname
-  		if (curr_file.endsWith('.py')) {
-  			editor.setMode('text/python')
-  		} else if (curr_file.endsWith('.js')) {
-  			editor.setMode('text/javascript')
-  		} else if (curr_file.endsWith('.html')) {
-  			editor.setMode('text/html')
-  		} else if (curr_file.endsWith('.css')) {
-  			editor.setMode('text/css')
-  		}
-  	})
-  }
-		</textarea>
-	</section>
+<div class="panels">
+  <div id="left_panel">
+    <section id="editor">
+      <textarea id="myTextarea">
+  // sample code, NOT REAL
+  
+  var editor = CodeMirror.fromTextArea(myTextarea, {
+	  lineNumbers: true,
+	  mode: 'text/javascript'
+	});
+  
+	var curr_file = ""
+  
+	function loadFile(fname) {
+		jQuery.get('/read?fname=' + fname).then(function(r) {
+			editor.setValue(r.content)
+			curr_file = fname
+			if (curr_file.endsWith('.py')) {
+				editor.setMode('text/python')
+			} else if (curr_file.endsWith('.js')) {
+				editor.setMode('text/javascript')
+			} else if (curr_file.endsWith('.html')) {
+				editor.setMode('text/html')
+			} else if (curr_file.endsWith('.css')) {
+				editor.setMode('text/css')
+			}
+		})
+	}
+		  </textarea
+      >
+    </section>
+  </div>
+  <section id="file_browser" class="frosted-panel">
+	<ul>
+	  <li>index.html</li>
+	  <li>server.py</li>
+	  <li>modules/getbest.py</li>
+	  <li>modules/torrents.py</li>
+	  <li>modules/judy.py</li>
+	  <li>README.md</li>
+	</ul>
+  </section>
 </div>
 
-<div id="right_panel">
-	<section id="file_browser">
-		<ul>
-			<li>index.html</li>
-			<li>server.py</li>
-			<li>modules/getbest.py</li>
-			<li>modules/torrents.py</li>
-			<li>modules/judy.py</li>
-			<li>README.md</li>
-		</ul>
-	</section>
+<div id="logsPanel">
+    
 
-	<section id="log">
-		<pre>
-Tue Nov 15 17:44:26 PST 2022
-Tue Nov 15 17:44:27 PST 2022
-Tue Nov 15 17:44:28 PST 2022
-Tue Nov 15 17:44:29 PST 2022
-Tue Nov 15 17:44:30 PST 2022
-Tue Nov 15 17:44:31 PST 2022
-Tue Nov 15 17:44:32 PST 2022
-Tue Nov 15 17:44:33 PST 2022
-Tue Nov 15 17:44:34 PST 2022
-Tue Nov 15 17:44:36 PST 2022
-Tue Nov 15 17:44:37 PST 2022
-Tue Nov 15 17:44:38 PST 2022
-		</pre>
-	</section>
-</div>
+    <section id="log">
+      <pre>
+  Tue Nov 15 17:44:26 PST 2022
+  Tue Nov 15 17:44:27 PST 2022
+  Tue Nov 15 17:44:28 PST 2022
+  Tue Nov 15 17:44:29 PST 2022
+  Tue Nov 15 17:44:30 PST 2022
+  Tue Nov 15 17:44:31 PST 2022
+  Tue Nov 15 17:44:32 PST 2022
+  Tue Nov 15 17:44:33 PST 2022
+  Tue Nov 15 17:44:34 PST 2022
+  Tue Nov 15 17:44:36 PST 2022
+  Tue Nov 15 17:44:37 PST 2022
+  Tue Nov 15 17:44:38 PST 2022
+		  </pre
+      >
+    </section>
+  </div>
 
 <style type="text/css">
-	#left_panel { float: left; }
-	#right_panel { float: right; }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-color: #1b2430;
+    color: white;
+  }
+  #left_panel {
+  }
+  #right_panel {
+  }
 
-	#left_panel #file_browser { height: 100%; }
+  .frosted-panel {
+    -webkit-box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* overflow: hidden;
+	visibility: hidden; */
+    width: 10px;
+    height: 10px;
+
+    list-style: none;
+
+    padding: 0;
+    margin: 0;
+  }
+
+  section > ul > li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .panels {
+	display: flex;
+	flex-direction: row;
+	height: 100vh;
+  }
+
+  #logsPanel {
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	top: 0;
+	right: 0;
+	width: 100vw;
+  }
+
+  .CodeMirror-linenumbers {
+	color: #aaa;
+	background-color: #1b2430;
+  }
+
+  #left_panel #file_browser {
+    height: 100%;
+  }
+
+  .CodeMirror {
+	height: 100%;
+	width: 100%;   
+	 
+    overflow: hidden;
+   
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(100,100,100,20%);
+	/* gaussian blur */
+	backdrop-filter: blur(10px);
+	z-index: 10;
+  }
 </style>
 
 <script>
   var editor = CodeMirror.fromTextArea(myTextarea, {
     lineNumbers: true,
-    mode: 'text/javascript'
+    mode: "text/javascript",
   });
 
-  var curr_file = ""
+  var curr_file = "";
 
   function loadFile(fname) {
-  	jQuery.get('/read?fname=' + fname).then(function(r) {
-  		editor.setValue(r.content)
-  		curr_file = fname
-  		if (curr_file.endsWith('.py')) {
-  			editor.setMode('text/python')
-  		} else if (curr_file.endsWith('.js')) {
-  			editor.setMode('text/javascript')
-  		} else if (curr_file.endsWith('.html')) {
-  			editor.setMode('text/html')
-  		} else if (curr_file.endsWith('.css')) {
-  			editor.setMode('text/css')
-  		}
-  	})
+    jQuery.get("/read?fname=" + fname).then(function (r) {
+      editor.setValue(r.content);
+      curr_file = fname;
+      if (curr_file.endsWith(".py")) {
+        editor.setMode("text/python");
+      } else if (curr_file.endsWith(".js")) {
+        editor.setMode("text/javascript");
+      } else if (curr_file.endsWith(".html")) {
+        editor.setMode("text/html");
+      } else if (curr_file.endsWith(".css")) {
+        editor.setMode("text/css");
+      }
+    });
   }
-
 
   function refreshFileList() {
-  	jQuery.get('/files').then(function(r) {
-  		var html = ""
-  		for (var fname of r.files) {
-  			html += "<li>" + fname + "</li>"
-  		}
-  		jQuery('#file_browser').html(html)
-  		jQuery('#file_browser li').click(function(ev) {
-  			loadFile(ev.currentTarget.innerText)
-  		})
-  	})
+    jQuery.get("/files").then(function (r) {
+      var html = "<ul>";
+      for (var fname of r.files) {
+        html += "<li>" + fname + "</li>";
+      }
+      html += "</ul>";
+      jQuery("#file_browser").html(html);
+      jQuery("#file_browser li").click(function (ev) {
+        loadFile(ev.currentTarget.innerText);
+      });
+    });
   }
-  refreshFileList()
-  setInterval(refreshFileList, 10000)
+  refreshFileList();
+  setInterval(refreshFileList, 10000);
 
   function refreshLogs() {
-  	jQuery.get('/logs').then(function(r) {
-  		jQuery('#log pre').html(r.content)
-  	})
-  }
-  refreshLogs()
-  setInterval(refreshLogs, 1000)
-
-    jQuery(document).keydown(function(event) {
-        if((event.ctrlKey || event.metaKey) && event.which == 83) {
-            var code = editor.getValue()
-            $.ajax('/save?fname=' + curr_file, {
-			    data : JSON.stringify({ "content": code }),
-			    contentType : 'application/json',
-			    type : 'POST'
-			})
-            event.preventDefault();
-            return false;
-        }
+    jQuery.get("/logs").then(function (r) {
+      jQuery("#log pre").html(r.content);
     });
+  }
+  refreshLogs();
+  setInterval(refreshLogs, 1000);
+
+  jQuery(document).keydown(function (event) {
+    if ((event.ctrlKey || event.metaKey) && event.which == 83) {
+      var code = editor.getValue();
+      $.ajax("/save?fname=" + curr_file, {
+        data: JSON.stringify({ content: code }),
+        contentType: "application/json",
+        type: "POST",
+      });
+      event.preventDefault();
+      return false;
+    }
+  });
 </script>

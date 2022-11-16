@@ -1,5 +1,0 @@
-{
-	"project_dir": "./",
-	"cmd": "./modules/test_program.sh",
-	"port": 8082
-}
