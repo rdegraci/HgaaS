@@ -72,22 +72,20 @@
     </section>
   </div>
   <section id="file_browser" class="frosted-panel">
-	<ul>
-	  <li>index.html</li>
-	  <li>server.py</li>
-	  <li>modules/getbest.py</li>
-	  <li>modules/torrents.py</li>
-	  <li>modules/judy.py</li>
-	  <li>README.md</li>
-	</ul>
+    <ul>
+      <li>index.html</li>
+      <li>server.py</li>
+      <li>modules/getbest.py</li>
+      <li>modules/torrents.py</li>
+      <li>modules/judy.py</li>
+      <li>README.md</li>
+    </ul>
   </section>
 </div>
 
 <div id="logsPanel">
-    
-
-    <section id="log">
-      <pre>
+  <section id="log">
+    <pre>
   Tue Nov 15 17:44:26 PST 2022
   Tue Nov 15 17:44:27 PST 2022
   Tue Nov 15 17:44:28 PST 2022
@@ -100,10 +98,35 @@
   Tue Nov 15 17:44:36 PST 2022
   Tue Nov 15 17:44:37 PST 2022
   Tue Nov 15 17:44:38 PST 2022
-		  </pre
-      >
-    </section>
+		  </pre>
+  </section>
+</div>
+
+<div class="dropContainer">
+  <!-- down chevron -->
+  <div class="dropDown">
+    <div class="dropDown__button">
+      <div class="dropDown__icon">
+		<svg
+		  xmlns="http://www.w3.org/2000/svg"
+		  width="24"
+		  height="24"
+		  viewBox="0 0 24 24"
+		  fill="none"
+		  stroke="currentColor"
+		  stroke-width="2"
+		  stroke-linecap="round"
+		  stroke-linejoin="round"
+		  class="feather feather-chevron-down"
+		>
+		  <polyline points="6 9 12 15 18 9"></polyline>
+		  <!-- <polyline points="6 9 12 15 18 9"></polyline> -->
+		</svg>
+	  </div>
+	  </div>
+    </div>
   </div>
+</div>
 
 <style type="text/css">
   body {
@@ -142,26 +165,27 @@
   }
 
   .panels {
-	display: flex;
-	flex-direction: row;
-	height: 100vh;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
   }
 
   #logsPanel {
-	position: absolute;
-	height: 100vh;
-	width: 100vw;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	top: 0;
-	right: 0;
-	width: 100vw;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    top: 0;
+    right: 0;
+    width: 100vw;
   }
 
   .CodeMirror-linenumbers {
-	color: #aaa;
-	background-color: #1b2430;
+    color: #aaa;
+    background-color: #1b2430;
+    padding-right: 5px;
   }
 
   #left_panel #file_browser {
@@ -169,18 +193,39 @@
   }
 
   .CodeMirror {
-	height: 100%;
-	width: 100%;   
-	 
+    height: 100%;
+    width: 100%;
+
     overflow: hidden;
-   
+
     position: absolute;
     width: 100vw;
     height: 100vh;
-    background: rgba(100,100,100,20%);
-	/* gaussian blur */
-	backdrop-filter: blur(10px);
-	z-index: 10;
+    background: rgba(100, 100, 100, 20%);
+    /* gaussian blur */
+    backdrop-filter: blur(4px);
+    z-index: 10;
+  }
+
+  .dropContainer {
+	position: absolute;
+	bottom: 10px;
+	
+	width: 100vw;
+	height: 100vh;
+	z-index: 100;
+	justify-content: center;
+    ALIGN-ITEMS: end;
+    display: flex;
+	
+  }
+
+  .dropDown_button {
+	cursor: pointer;
+  }
+
+  .CodeMirror.hideme {
+	display: none;
   }
 </style>
 
