@@ -194,6 +194,7 @@ async def new():
     if os.path.isfile(fname):
         return jsonify({})
         print("makign file", fname)
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
     with open(fname, 'w') as f:
         f.write("\n\n\ndef register(bot):\n    pass\n\n\n")
     await kill_proc()
