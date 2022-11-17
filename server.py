@@ -9,6 +9,7 @@ import psutil
 import json
 import re
 import sys
+import stat
 
 from quart_auth import basic_auth_required
 
@@ -18,6 +19,10 @@ if len(sys.argv) == 1:
     print("Usage: python3 server.py <path_to_project>")
     print()
     print("your project should have a hgaas.json file in the root directory, modeled after config.json.template")
+    print()
+    print("alternative usage: python3 server.py init")
+    print()
+    print("this will initialize an HgaaS project in your current directory")
     sys.exit(1)
 
 if not os.path.isdir(sys.argv[1]):
@@ -25,6 +30,28 @@ if not os.path.isdir(sys.argv[1]):
     sys.exit(1)
 
 project_dir = os.path.realpath(sys.argv[1])
+
+if len(sys.argv) > 2 and sys.argv[2] == "init":
+    if os.path.isfile(project_dir + '/hgaas.json') or os.path.isfile(project_dir + '/.hgaasignore') or os.path.isfile(project_dir + '/hgaas_runner.sh'):
+        print("it looks like this is already an hgaas project (hgaas.json, .hgaasignore, or hgaas_runner.sh exist already)")
+        sys.exit(1)
+
+    with open(project_dir + '/hgaas_runner.sh', 'w') as f:
+        run_template = '#!/usr/bin/env bash\nfor i in $(seq 1 30); do\n    date\n    sleep 0.5\ndone\n'
+        f.write(run_template)
+    st = os.stat(project_dir + '/hgaas_runner.sh')
+    os.chmod(project_dir + '/hgaas_runner.sh', st.st_mode | stat.S_IEXEC)
+
+    with open(project_dir + '/hgaas.json', 'w') as f:
+        cfg_template = '{\n    "cmd": "./hgaas_runner.sh",\n    "port": 8082,\n    "auth_user": "",\n    "auth_password": ""\n}'
+        f.write(cfg_template)
+
+    with open(project_dir + '/.hgaasignore', 'w') as f:
+        f.write("\n")
+
+    print("created haas.json, .hgaasignore, and hgaas_runner.sh files.")
+    print("run 'hgaas .' to start your project!")
+    sys.exit(0)
 
 if not os.path.isfile(project_dir + '/hgaas.json'):
     print(f"config file does not exist: {project_dir}/hgaas.json")
@@ -38,7 +65,7 @@ config['project_dir'] = project_dir
 ignore_regs = []
 print(project_dir + '/.hgaasignore')
 if os.path.isfile(project_dir + '/.hgaasignore'):
-    ignore_regs = [ project_dir + "/" + t.strip() for t in open(project_dir + '/.hgaasignore').readlines() ]
+    ignore_regs = [ project_dir + "/" + t.strip() for t in open(project_dir + '/.hgaasignore').readlines() if t != "\n" ]
 
 print(ignore_regs)
 

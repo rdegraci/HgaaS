@@ -2,4 +2,8 @@
 
 origdir="$PWD"
 cd `dirname "$0"`/..
-python3 server.py "$origdir"
+if [ "x$1" == "xinit" ]; then
+	python3 server.py "$origdir" init
+else
+	python3 server.py "$origdir"
+fi
