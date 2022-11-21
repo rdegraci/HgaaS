@@ -57,3 +57,22 @@ Mercury 4eva.
   ```bash
   python server.py .
   ```
+
+## Running locally using Conda
+```bash
+# conda 4.12.0
+conda create --name hgaas python=3.8
+```
+
+```bash
+# Always activate the environemnt before installing
+conda activate hgaas
+```
+
+```bash
+pip install -r requirements.txt
+```
+
+```bash
+python server.py .
+```
